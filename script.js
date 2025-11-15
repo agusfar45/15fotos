@@ -171,6 +171,19 @@ async function borrarFoto(id) {
     alert("No se pudo borrar la foto 😢");
   }
 }
+let archivo = archivoInput.files[0];
+
+if (!archivo) {
+  alert("Seleccioná una foto para subir 📷");
+  return;
+}
+
+// límite aprox 800 KB
+const maxBytes = 800 * 1024;
+if (archivo.size > maxBytes) {
+  alert("La foto es muy pesada. Probá sacándole captura de pantalla o recortándola antes de subirla 😊");
+  return;
+}
 
 // Crea una card <div> para una foto + datos
 function crearCardFoto(data, id) {
