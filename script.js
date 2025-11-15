@@ -1,7 +1,13 @@
 // Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs } 
-from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+import { 
+  getFirestore, 
+  collection, 
+  addDoc, 
+  getDocs,
+  deleteDoc,
+  doc
+} from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCe0MPBRfK_IdTRPWhIGfECuAS8ktoozbY",
@@ -16,199 +22,236 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// 🔐 estado de admin
+let isAdmin = false;
+
 document.addEventListener("DOMContentLoaded", () => {
-    const btnSubir = document.getElementById("btnSubir");
-    btnSubir.addEventListener("click", subirFoto);
+  const btnSubir = document.getElementById("btnSubir");
+  btnSubir.addEventListener("click", subirFoto);
 
-    // eventos para cerrar el modal
-    const modal = document.getElementById("modal");
-    const btnClose = document.getElementById("modal-close");
+  const btnAdmin = document.getElementById("btnAdmin");
+  if (btnAdmin) {
+    btnAdmin.addEventListener("click", activarAdmin);
+  }
 
-    btnClose.addEventListener("click", cerrarModal);
-    modal.addEventListener("click", (e) => {
-        if (e.target.id === "modal") cerrarModal(); // click fuera del cuadro
-    });
+  // eventos modal
+  const modal = document.getElementById("modal");
+  const btnClose = document.getElementById("modal-close");
 
-    document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") cerrarModal();
-    });
+  btnClose.addEventListener("click", cerrarModal);
+  modal.addEventListener("click", (e) => {
+    if (e.target.id === "modal") cerrarModal();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") cerrarModal();
+  });
 
-    cargarGaleria();
+  cargarGaleria();
 });
+
+// 🔐 Activar modo admin con clave
+function activarAdmin() {
+  const keyInput = document.getElementById("adminKey");
+  const clave = keyInput.value.trim();
+
+  // podés cambiar esta clave si querés
+  if (clave === "valen15admin") {
+    isAdmin = true;
+    alert("Modo administrador activado ✅ Ahora podés eliminar fotos.");
+    cargarGaleria(); // para que aparezcan los botones de borrar
+  } else {
+    alert("Clave incorrecta ❌");
+  }
+}
 
 // SUBIR FOTO
 async function subirFoto() {
-    try {
-        const nombreInput   = document.getElementById("nombre");
-        const mensajeInput  = document.getElementById("mensaje");
-        const archivoInput  = document.getElementById("foto");
+  try {
+    const nombreInput   = document.getElementById("nombre");
+    const mensajeInput  = document.getElementById("mensaje");
+    const archivoInput  = document.getElementById("foto");
 
-        let nombre  = nombreInput.value.trim();
-        let mensaje = mensajeInput.value.trim();
-        let archivo = archivoInput.files[0];
+    let nombre  = nombreInput.value.trim();
+    let mensaje = mensajeInput.value.trim();
+    let archivo = archivoInput.files[0];
 
-        if (!nombre) {
-            alert("Por favor, escribí tu nombre y apellido 💕");
-            nombreInput.focus();
-            return;
-        }
-
-        if (!archivo) {
-            alert("Seleccioná una foto para subir 📷");
-            return;
-        }
-
-        let reader = new FileReader();
-
-        reader.onload = async function () {
-            let base64 = reader.result;
-            const ahora = new Date();
-
-            const data = {
-                imagen: base64,
-                nombre: nombre,
-                mensaje: mensaje,
-                fecha: ahora.toISOString()
-            };
-
-            // Mostrar al instante
-            mostrarFotoInstantanea(data);
-
-            // Guardar en Firestore
-            await addDoc(collection(db, "fotosInvitados"), data);
-
-            alert("¡Gracias! Tu foto y mensaje se subieron ❤️");
-
-            // Limpiar campos (dejo el nombre para siguientes fotos)
-            archivoInput.value = "";
-            mensajeInput.value = "";
-
-            cargarGaleria();
-        };
-
-        reader.readAsDataURL(archivo);
-    } catch (error) {
-        console.error("Error en subirFoto:", error);
-        alert("Ocurrió un error al subir la foto 😢");
+    if (!nombre) {
+      alert("Por favor, escribí tu nombre y apellido 💕");
+      nombreInput.focus();
+      return;
     }
+
+    if (!archivo) {
+      alert("Seleccioná una foto para subir 📷");
+      return;
+    }
+
+    let reader = new FileReader();
+
+    reader.onload = async function () {
+      let base64 = reader.result;
+      const ahora = new Date();
+
+      const data = {
+        imagen: base64,
+        nombre: nombre,
+        mensaje: mensaje,
+        fecha: ahora.toISOString()
+      };
+
+      // Guardar en Firestore
+      await addDoc(collection(db, "fotosInvitados"), data);
+
+      alert("¡Gracias! Tu foto y mensaje se subieron ❤️");
+
+      // Limpiar campos (dejo el nombre para siguientes fotos)
+      archivoInput.value = "";
+      mensajeInput.value = "";
+
+      cargarGaleria();
+    };
+
+    reader.readAsDataURL(archivo);
+  } catch (error) {
+    console.error("Error en subirFoto:", error);
+    alert("Ocurrió un error al subir la foto 😢");
+  }
 }
 
 // ===== MODAL =====
 function abrirModal(data) {
-    const modal = document.getElementById("modal");
-    const img   = document.getElementById("modal-img");
-    const nom   = document.getElementById("modal-nombre");
-    const fec   = document.getElementById("modal-fecha");
-    const msg   = document.getElementById("modal-mensaje");
+  const modal = document.getElementById("modal");
+  const img   = document.getElementById("modal-img");
+  const nom   = document.getElementById("modal-nombre");
+  const fec   = document.getElementById("modal-fecha");
+  const msg   = document.getElementById("modal-mensaje");
 
-    img.src = data.imagen;
-    nom.textContent = data.nombre || "Invitado";
+  img.src = data.imagen;
+  nom.textContent = data.nombre || "Invitado";
 
-    // fecha
-    let fechaTexto = "";
-    if (data.fecha) {
-        const fechaObj = new Date(data.fecha);
-        if (!isNaN(fechaObj.getTime())) {
-            fechaTexto = fechaObj.toLocaleDateString("es-AR", {
-                day: "2-digit",
-                month: "2-digit",
-                year: "numeric"
-            });
-        }
+  // fecha
+  let fechaTexto = "";
+  if (data.fecha) {
+    const fechaObj = new Date(data.fecha);
+    if (!isNaN(fechaObj.getTime())) {
+      fechaTexto = fechaObj.toLocaleDateString("es-AR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric"
+      });
     }
-    fec.textContent = fechaTexto ? `Subida el ${fechaTexto}` : "";
+  }
+  fec.textContent = fechaTexto ? `Subida el ${fechaTexto}` : "";
 
-    // mensaje
-    if (data.mensaje && data.mensaje.trim() !== "") {
-        msg.textContent = `“${data.mensaje.trim()}”`;
-    } else {
-        msg.textContent = "Sin mensaje 💌";
-    }
+  // mensaje
+  if (data.mensaje && data.mensaje.trim() !== "") {
+    msg.textContent = `“${data.mensaje.trim()}”`;
+  } else {
+    msg.textContent = "Sin mensaje 💌";
+  }
 
-    modal.style.display = "flex";
+  modal.style.display = "flex";
 }
 
 function cerrarModal() {
-    const modal = document.getElementById("modal");
-    modal.style.display = "none";
+  const modal = document.getElementById("modal");
+  modal.style.display = "none";
 }
 
-// Muestra una tarjeta en la galería (instantáneo)
-function mostrarFotoInstantanea(data) {
-    const contenedor = document.getElementById("galeria");
-    const card = crearCardFoto(data);
-    card.style.animation = "fadein 0.8s";
-    contenedor.prepend(card);
+// 🗑 Borrar UNA foto por id
+async function borrarFoto(id) {
+  if (!confirm("¿Seguro que querés eliminar esta foto?")) return;
+
+  try {
+    await deleteDoc(doc(db, "fotosInvitados", id));
+    alert("Foto eliminada ✅");
+    cargarGaleria();
+  } catch (error) {
+    console.error("Error al borrar foto:", error);
+    alert("No se pudo borrar la foto 😢");
+  }
 }
 
 // Crea una card <div> para una foto + datos
-function crearCardFoto(data) {
-    const card = document.createElement("div");
-    card.className = "card";
+function crearCardFoto(data, id) {
+  const card = document.createElement("div");
+  card.className = "card";
 
-    const img = document.createElement("img");
-    img.src = data.imagen;
+  const img = document.createElement("img");
+  img.src = data.imagen;
 
-    const info = document.createElement("div");
-    info.className = "card-info";
+  const info = document.createElement("div");
+  info.className = "card-info";
 
-    // Nombre
-    const nombreEl = document.createElement("div");
-    nombreEl.className = "card-nombre";
-    nombreEl.textContent = data.nombre || "Invitado";
+  // Nombre
+  const nombreEl = document.createElement("div");
+  nombreEl.className = "card-nombre";
+  nombreEl.textContent = data.nombre || "Invitado";
 
-    // Fecha
-    const fechaEl = document.createElement("div");
-    fechaEl.className = "card-fecha";
-    let fechaTexto = "";
-    if (data.fecha) {
-        const fechaObj = new Date(data.fecha);
-        if (!isNaN(fechaObj.getTime())) {
-            fechaTexto = fechaObj.toLocaleDateString("es-AR", {
-                day: "2-digit",
-                month: "2-digit",
-                year: "numeric"
-            });
-        }
+  // Fecha
+  const fechaEl = document.createElement("div");
+  fechaEl.className = "card-fecha";
+  let fechaTexto = "";
+  if (data.fecha) {
+    const fechaObj = new Date(data.fecha);
+    if (!isNaN(fechaObj.getTime())) {
+      fechaTexto = fechaObj.toLocaleDateString("es-AR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric"
+      });
     }
-    fechaEl.textContent = fechaTexto ? `Subida el ${fechaTexto}` : "";
+  }
+  fechaEl.textContent = fechaTexto ? `Subida el ${fechaTexto}` : "";
 
-    // Mensaje (resumen)
-    const msgEl = document.createElement("div");
-    msgEl.className = "card-msg";
-    if (data.mensaje && data.mensaje.trim() !== "") {
-        msgEl.textContent = `“${data.mensaje.trim()}”`;
-    } else {
-        msgEl.textContent = "";
-    }
+  // Mensaje (resumen)
+  const msgEl = document.createElement("div");
+  msgEl.className = "card-msg";
+  if (data.mensaje && data.mensaje.trim() !== "") {
+    msgEl.textContent = `“${data.mensaje.trim()}”`;
+  } else {
+    msgEl.textContent = "";
+  }
 
-    info.appendChild(nombreEl);
-    info.appendChild(fechaEl);
-    if (msgEl.textContent) info.appendChild(msgEl);
+  info.appendChild(nombreEl);
+  info.appendChild(fechaEl);
+  if (msgEl.textContent) info.appendChild(msgEl);
 
-    card.appendChild(img);
-    card.appendChild(info);
+  // 🗑 Botón de borrar solo si es admin
+  if (isAdmin && id) {
+    const delBtn = document.createElement("button");
+    delBtn.className = "card-delete";
+    delBtn.textContent = "Eliminar";
+    delBtn.addEventListener("click", (e) => {
+      e.stopPropagation(); // para que no abra el modal al borrar
+      borrarFoto(id);
+    });
+    info.appendChild(delBtn);
+  }
 
-    // 👉 al hacer clic, abre el modal
-    card.addEventListener("click", () => abrirModal(data));
+  card.appendChild(img);
+  card.appendChild(info);
 
-    return card;
+  // clic en la card abre el modal solo si no se hizo clic en borrar
+  card.addEventListener("click", () => abrirModal(data));
+
+  return card;
 }
 
 // CARGAR GALERÍA desde Firestore
 async function cargarGaleria() {
-    try {
-        const contenedor = document.getElementById("galeria");
-        contenedor.innerHTML = "";
+  try {
+    const contenedor = document.getElementById("galeria");
+    contenedor.innerHTML = "";
 
-        const querySnapshot = await getDocs(collection(db, "fotosInvitados"));
+    const querySnapshot = await getDocs(collection(db, "fotosInvitados"));
 
-        querySnapshot.forEach((docSnap) => {
-            const data = docSnap.data();
-            const card = crearCardFoto(data);
-            contenedor.appendChild(card);
-        });
-    } catch (error) {
-        console.error("Error al cargar galería:", error);
-    }
+    querySnapshot.forEach((docSnap) => {
+      const data = docSnap.data();
+      const card = crearCardFoto(data, docSnap.id);
+      contenedor.appendChild(card);
+    });
+  } catch (error) {
+    console.error("Error al cargar galería:", error);
+  }
 }
