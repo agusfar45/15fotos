@@ -70,6 +70,9 @@ async function subirFoto() {
     const nombreInput   = document.getElementById("nombre");
     const mensajeInput  = document.getElementById("mensaje");
     const archivoInput  = document.getElementById("foto");
+    const infoFotoEl    = document.getElementById("infoFoto");
+
+    if (infoFotoEl) infoFotoEl.textContent = "";
 
     let nombre  = nombreInput.value.trim();
     let mensaje = mensajeInput.value.trim();
@@ -86,29 +89,77 @@ async function subirFoto() {
       return;
     }
 
-    let reader = new FileReader();
+    // Tamaño original en KB
+    const originalKB = archivo.size / 1024;
+    const limiteKB   = 700; // si pesa menos de esto, NO se comprime
 
-    reader.onload = async function () {
-      let base64 = reader.result;
-      const ahora = new Date();
+    console.log("Tamaño original (KB):", originalKB.toFixed(1));
 
-      const data = {
-        imagen: base64,
-        nombre: nombre,
-        mensaje: mensaje,
-        fecha: ahora.toISOString()
+    const reader = new FileReader();
+
+    reader.onload = async function (e) {
+      // Si la foto es chica => subimos sin comprimir
+      if (originalKB <= limiteKB) {
+        const base64 = e.target.result;
+
+        if (infoFotoEl) {
+          infoFotoEl.textContent =
+            `La foto pesa ${originalKB.toFixed(1)} KB y se subió sin comprimir 💙`;
+        }
+
+        await guardarFotoEnFirestore(base64, nombre, mensaje);
+        alert("¡Gracias! Tu foto y mensaje se subieron ❤️");
+
+        archivoInput.value = "";
+        mensajeInput.value = "";
+
+        cargarGaleria();
+        return;
+      }
+
+      // Si la foto es grande => comprimimos con canvas
+      const img = new Image();
+
+      img.onload = async function () {
+        const maxWidth = 1280;
+        const maxHeight = 1280;
+
+        let width = img.width;
+        let height = img.height;
+
+        const scale = Math.min(1, maxWidth / width, maxHeight / height);
+        width *= scale;
+        height *= scale;
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const base64 = canvas.toDataURL("image/jpeg", 0.7);
+
+        const approxBytes = Math.round((base64.length * 3) / 4);
+        const compressedKB = approxBytes / 1024;
+
+        console.log("Tamaño comprimido aprox (KB):", compressedKB.toFixed(1));
+
+        if (infoFotoEl) {
+          infoFotoEl.textContent =
+            `Tu foto se comprimió de ${originalKB.toFixed(1)} KB a ${compressedKB.toFixed(1)} KB para poder subirse 💙`;
+        }
+
+        await guardarFotoEnFirestore(base64, nombre, mensaje);
+        alert("¡Gracias! Tu foto y mensaje se subieron ❤️");
+
+        archivoInput.value = "";
+        mensajeInput.value = "";
+
+        cargarGaleria();
       };
 
-      // Guardar en Firestore
-      await addDoc(collection(db, "fotosInvitados"), data);
-
-      alert("¡Gracias! Tu foto y mensaje se subieron ❤️");
-
-      // Limpiar campos (dejo el nombre para siguientes fotos)
-      archivoInput.value = "";
-      mensajeInput.value = "";
-
-      cargarGaleria();
+      img.src = e.target.result;
     };
 
     reader.readAsDataURL(archivo);
@@ -117,6 +168,7 @@ async function subirFoto() {
     alert("Ocurrió un error al subir la foto 😢");
   }
 }
+
 
 // ===== MODAL =====
 function abrirModal(data) {
