@@ -1,301 +1,637 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Galería 15 Valen</title>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+  />
+  <title>Galería 15 Valen</title>
 
-    <!-- Fuente cursiva elegante -->
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+  <!-- Fuente cursiva elegante -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap"
+    rel="stylesheet"
+  />
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
-            color: #003d80;
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+      color: #003d80;
 
-            /* Fondo con difuminado blanco */
-            background:
-                linear-gradient(to bottom, rgba(255,255,255,0.2), rgba(255,255,255,1)),
-                url("fondo.jpg");
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-        }
+      background: linear-gradient(
+          to bottom,
+          rgba(255, 255, 255, 0.2),
+          rgba(255, 255, 255, 1)
+        ),
+        url("fondo.jpg");
+      background-size: cover;
+      background-position: center;
+      /* iOS Safari no se lleva tan bien con fixed, lo saco para evitar bugs */
+      /* background-attachment: fixed; */
+    }
 
-        h1 {
-            font-family: "Great Vibes", cursive;
-            font-size: 54px;
-            font-weight: 300;
-            color: #000000;
-            margin-bottom: 10px;
-            letter-spacing: 1px;
-            text-shadow: 0 0 1px rgba(255,255,255,0.6);
-        }
+    h1 {
+      font-family: "Great Vibes", cursive;
+      font-size: 48px;
+      font-weight: 300;
+      color: #0059b3;
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+      text-shadow: 0 0 1px rgba(255, 255, 255, 0.6);
+    }
 
-        /* CUADRO DE CARGA */
-        .uploadBox {
-            background: white;
-            padding: 20px;
-            border-radius: 16px;
-            margin: 20px auto;
-            width: 90%;
-            max-width: 520px;
-            box-shadow: 0px 8px 20px rgba(0,0,0,0.15);
-            border: 2px solid #80b3ff;
-        }
+    .uploadBox {
+      background: white;
+      padding: 20px;
+      border-radius: 16px;
+      margin: 20px auto;
+      width: 90%;
+      max-width: 520px;
+      box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.15);
+      border: 2px solid #80b3ff;
+    }
 
-        .uploadBox h3 {
-            color: #000000;
-            margin-top: 0;font-family: "Great Vibes", cursive;
-            font-size: 30px;
-            font-weight: 300;
-        
-            margin-bottom: 10px;
-            letter-spacing: 1px;
-        }
+    .uploadBox h3 {
+      color: #0059b3;
+      margin-top: 0;
+    }
 
-        .form-row {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            margin-bottom: 12px;
-            text-align: left;
-        }
+    .form-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+      text-align: left;
+    }
 
-        label {
-            font-size: 14px;
-            color: #003d80;
-        }
+    label {
+      font-size: 14px;
+      color: #003d80;
+    }
 
-        input[type="text"],
-        input[type="file"],
-        textarea {
-            width: 100%;
-            padding: 8px 10px;
-            border-radius: 8px;
-            border: 1px solid #7da7ff;
-            font-size: 14px;
-            background: #f5f9ff;
-            color: #003d80;
-        }
+    input[type="text"],
+    input[type="file"],
+    textarea {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid #7da7ff;
+      font-size: 14px;
+      background: #f5f9ff;
+      color: #003d80;
+      box-sizing: border-box;
+    }
 
-        textarea {
-            resize: vertical;
-            min-height: 60px;
-            max-height: 120px;
-        }
+    textarea {
+      resize: vertical;
+      min-height: 60px;
+      max-height: 120px;
+    }
 
-        #btnSubir {
-            background: #4d94ff;
-            color: white;
-            border: none;
-            padding: 10px 22px;
-            border-radius: 20px;
-            font-size: 14px;
-            cursor: pointer;
-            margin-top: 8px;
-        }
+    #btnSubir {
+      background: #4d94ff;
+      color: white;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 20px;
+      font-size: 14px;
+      cursor: pointer;
+      margin-top: 8px;
+    }
 
-        #btnSubir:hover {
-            background: #1a75ff;
-        }
+    #btnSubir:hover {
+      background: #1a75ff;
+    }
 
-        /* PANEL ADMIN */
-        #adminPanel {
-            margin-bottom: 20px;
-        }
+    #adminPanel {
+      margin-bottom: 15px;
+    }
 
-        /* GALERIA */
-        h2 {
-            margin-top: 35px;
-            color: #003d80;
-            font-weight: bold;
-            font-family: "Great Vibes", cursive;
-            font-size: 30px;
-            font-weight: 300;
-            margin-bottom: 10px;
-            letter-spacing: 1px;
-        }
+    h2 {
+      margin-top: 35px;
+      color: #003d80;
+      font-weight: bold;
+    }
 
-        .gallery {
-            margin-top: 20px;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 14px;
-        }
+    .gallery {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 14px;
+    }
 
-        .card {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-            display: flex;
-            flex-direction: column;
-            cursor: pointer;
-            border: 2px solid #b3ceff;
-        }
+    .card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      border: 2px solid #b3ceff;
+    }
 
-        .card img {
-            width: 100%;
-            height: 160px;
-            object-fit: cover;
-        }
+    .card img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+    }
 
-        .card-info {
-            padding: 8px 10px 10px;
-            text-align: left;
-            color: #003d80;
-        }
+    .card-info {
+      padding: 8px 10px 10px;
+      text-align: left;
+      color: #003d80;
+    }
 
-        .card-nombre {
-            font-weight: bold;
-            color: #0059b3;
-        }
+    .card-nombre {
+      font-weight: bold;
+      color: #0059b3;
+    }
 
-        .card-fecha {
-            font-size: 12px;
-            color: #3366cc;
-        }
+    .card-fecha {
+      font-size: 12px;
+      color: #3366cc;
+    }
 
-        .card-msg {
-            font-size: 12px;
-            margin-top: 6px;
-        }
+    .card-msg {
+      font-size: 12px;
+      margin-top: 6px;
+    }
 
-        .card-delete {
-            margin-top: 6px;
-            padding: 4px 8px;
-            font-size: 11px;
-            border-radius: 6px;
-            border: none;
-            background: #ff4f4f;
-            color: #ffffff;
-            cursor: pointer;
-        }
+    .card-delete {
+      margin-top: 6px;
+      padding: 4px 8px;
+      font-size: 11px;
+      border-radius: 6px;
+      border: none;
+      background: #ff4f4f;
+      color: #ffffff;
+      cursor: pointer;
+    }
 
-        .card-delete:hover {
-            background: #d93636;
-        }
+    .card-delete:hover {
+      background: #d93636;
+    }
 
-        /* MODAL */
-        .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 51, 102, 0.7);
-            justify-content: center;
-            align-items: center;
-            z-index: 999;
-            padding: 20px;
-        }
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 51, 102, 0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+      padding: 20px;
+    }
 
-        .modal-inner {
-            background: #ffffff;
-            border-radius: 16px;
-            max-width: 700px;
-            width: 100%;
-            max-height: 90vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            border: 3px solid #80b3ff;
-        }
+    .modal-inner {
+      background: #ffffff;
+      border-radius: 16px;
+      max-width: 700px;
+      width: 100%;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border: 3px solid #80b3ff;
+    }
 
-        #modal-close {
-            align-self: flex-end;
-            padding: 6px 12px;
-            font-size: 26px;
-            cursor: pointer;
-            color: #003d80;
-        }
+    #modal-close {
+      align-self: flex-end;
+      padding: 6px 12px;
+      font-size: 26px;
+      cursor: pointer;
+      color: #003d80;
+    }
 
-        #modal-img {
-            width: 100%;
-            max-height: 60vh;
-            object-fit: contain;
-            background: #e6f0ff;
-        }
+    #modal-img {
+      width: 100%;
+      max-height: 60vh;
+      object-fit: contain;
+      background: #e6f0ff;
+    }
 
-        .modal-text {
-            padding: 10px 16px 16px;
-            text-align: left;
-            color: #003d80;
-        }
+    .modal-text {
+      padding: 10px 16px 16px;
+      text-align: left;
+      color: #003d80;
+    }
 
-        #modal-nombre {
-            font-weight: bold;
-            color: #0059b3;
-            font-size: 16px;
-        }
+    #modal-nombre {
+      font-weight: bold;
+      color: #0059b3;
+      font-size: 16px;
+    }
 
-        #modal-fecha {
-            font-size: 12px;
-            color: #3366cc;
-        }
+    #modal-fecha {
+      font-size: 12px;
+      color: #3366cc;
+    }
 
-        #modal-mensaje {
-            font-size: 14px;
-            margin-top: 6px;
-        }
+    #modal-mensaje {
+      font-size: 14px;
+      margin-top: 6px;
+    }
 
-    </style>
+    #infoFoto {
+      font-size: 12px;
+      color: #003d80;
+      margin-top: 8px;
+      min-height: 16px;
+    }
+
+    #errorMsg {
+      font-size: 12px;
+      color: #b30000;
+      margin-top: 8px;
+      min-height: 16px;
+    }
+  </style>
 </head>
 <body>
+  <h1>Subí tus fotos del cumpleaños 💙</h1>
 
-    <h1>Subí tus fotos del cumpleaños 💙</h1>
+  <!-- PANEL ADMIN -->
+  <div id="adminPanel">
+    <input
+      id="adminKey"
+      type="password"
+      placeholder="Clave admin"
+      style="padding: 5px 10px; border-radius: 6px; border: 1px solid #ccc"
+    />
+    <button
+      id="btnAdmin"
+      style="
+        padding: 6px 12px;
+        border-radius: 6px;
+        border: none;
+        background: #4d94ff;
+        color: white;
+        cursor: pointer;
+      "
+    >
+      Entrar como admin
+    </button>
+  </div>
 
-    <!-- PANEL ADMIN -->
-    <div id="adminPanel">
-        <input id="adminKey" type="password" placeholder="Clave admin"
-               style="padding:5px 10px; border-radius:6px; border:1px solid #ccc;">
-        <button id="btnAdmin"
-                style="padding:6px 12px; border-radius:6px; border:none; background:#4d94ff; color:white; cursor:pointer;">
-            Entrar como admin
-        </button>
+  <!-- SUBIDA -->
+  <div class="uploadBox">
+    <h3>Agregar foto al recuerdo</h3>
+
+    <div class="form-row">
+      <label>Nombre y apellido</label>
+      <input type="text" id="nombre" placeholder="Ej: Ana López" />
     </div>
 
-    <!-- CAJA DE SUBIR FOTO -->
-    <div class="uploadBox">
-        <h3>Agregar foto al recuerdo</h3>
-
-        <div class="form-row">
-            <label>Nombre y apellido</label>
-            <input type="text" id="nombre" placeholder="Ej: Ana López">
-        </div>
-
-        <div class="form-row">
-            <label>Mensaje para Valen (opcional)</label>
-            <textarea id="mensaje" placeholder="Ej: ¡Feliz 15 Valen!"></textarea>
-        </div>
-
-        <div class="form-row">
-            <label>Elegí una foto</label>
-            <input type="file" id="foto" accept="image/*">
-        </div>
-
-        <button id="btnSubir">Subir Foto</button>
+    <div class="form-row">
+      <label>Mensaje para Valen (opcional)</label>
+      <textarea
+        id="mensaje"
+        placeholder="Ej: ¡Feliz 15 Valen!"
+      ></textarea>
     </div>
 
-    <h2>📸 Galería del Evento</h2>
-
-    <!-- GALERÍA -->
-    <div id="galeria" class="gallery"></div>
-
-    <!-- MODAL -->
-    <div id="modal" class="modal">
-        <div class="modal-inner">
-            <span id="modal-close">&times;</span>
-            <img id="modal-img" src="">
-            <div class="modal-text">
-                <div id="modal-nombre"></div>
-                <div id="modal-fecha"></div>
-                <div id="modal-mensaje"></div>
-            </div>
-        </div>
+    <div class="form-row">
+      <label>Elegí una foto</label>
+      <!-- accept + capture ayudan en celulares -->
+      <input
+        type="file"
+        id="foto"
+        accept="image/*"
+      />
     </div>
 
-    <script type="module" src="script.js"></script>
+    <button id="btnSubir">Subir Foto</button>
+
+    <p id="infoFoto"></p>
+    <p id="errorMsg"></p>
+  </div>
+
+  <h2>📸 Galería del Evento</h2>
+
+  <div id="galeria" class="gallery"></div>
+
+  <!-- MODAL -->
+  <div id="modal" class="modal">
+    <div class="modal-inner">
+      <span id="modal-close">&times;</span>
+      <img id="modal-img" />
+      <div class="modal-text">
+        <div id="modal-nombre"></div>
+        <div id="modal-fecha"></div>
+        <div id="modal-mensaje"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase compat (más compatible con Safari/Chrome móvil) -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
+
+  <script>
+    // ⚙️ CONFIG DE TU PROYECTO
+    var firebaseConfig = {
+      apiKey: "AIzaSyCe0MPBRfK_IdTRPWhIGfECuAS8ktoozbY",
+      authDomain: "pagina15valen.firebaseapp.com",
+      projectId: "pagina15valen",
+      storageBucket: "pagina15valen.firebasestorage.app",
+      messagingSenderId: "589719568440",
+      appId: "1:589719568440:web:0e8cab245969c1d3fb24cd",
+      measurementId: "G-SXFERLPTXJ",
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    var db = firebase.firestore();
+
+    var isAdmin = false;
+
+    document.addEventListener("DOMContentLoaded", function () {
+      var btnSubir = document.getElementById("btnSubir");
+      var btnAdmin = document.getElementById("btnAdmin");
+      var modal = document.getElementById("modal");
+      var btnClose = document.getElementById("modal-close");
+
+      btnSubir.addEventListener("click", subirFoto);
+      btnAdmin.addEventListener("click", activarAdmin);
+
+      btnClose.addEventListener("click", cerrarModal);
+      modal.addEventListener("click", function (e) {
+        if (e.target.id === "modal") cerrarModal();
+      });
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") cerrarModal();
+      });
+
+      cargarGaleria();
+    });
+
+    function setError(msg) {
+      var errorEl = document.getElementById("errorMsg");
+      if (errorEl) errorEl.textContent = msg || "";
+    }
+
+    function setInfo(msg) {
+      var infoEl = document.getElementById("infoFoto");
+      if (infoEl) infoEl.textContent = msg || "";
+    }
+
+    function activarAdmin() {
+      var keyInput = document.getElementById("adminKey");
+      var clave = keyInput.value.trim();
+
+      if (clave === "valen15admin") {
+        isAdmin = true;
+        alert("Modo administrador activado ✅");
+        cargarGaleria();
+      } else {
+        alert("Clave incorrecta ❌");
+      }
+    }
+
+    // SUBIR FOTO (con compresión para que funcione en celu)
+    function subirFoto() {
+      try {
+        setError("");
+        setInfo("");
+
+        var nombreInput = document.getElementById("nombre");
+        var mensajeInput = document.getElementById("mensaje");
+        var archivoInput = document.getElementById("foto");
+
+        var nombre = (nombreInput.value || "").trim();
+        var mensaje = (mensajeInput.value || "").trim();
+        var archivo = archivoInput.files[0];
+
+        if (!nombre) {
+          alert("Por favor, escribí tu nombre y apellido 💕");
+          nombreInput.focus();
+          return;
+        }
+
+        if (!archivo) {
+          alert("Seleccioná una foto para subir 📷");
+          return;
+        }
+
+        var originalKB = archivo.size / 1024;
+        console.log("Original KB:", originalKB.toFixed(1));
+
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+          var img = new Image();
+
+          img.onload = function () {
+            // tamaño máximo
+            var maxWidth = 1280;
+            var maxHeight = 1280;
+            var width = img.width;
+            var height = img.height;
+
+            var scale = Math.min(1, maxWidth / width, maxHeight / height);
+            width = width * scale;
+            height = height * scale;
+
+            var canvas = document.createElement("canvas");
+            canvas.width = width;
+            canvas.height = height;
+            var ctx = canvas.getContext("2d");
+
+            ctx.drawImage(img, 0, 0, width, height);
+
+            // JPG calidad 0.7
+            var base64 = canvas.toDataURL("image/jpeg", 0.7);
+
+            // tamaño aproximado resultante
+            var approxBytes = Math.round((base64.length * 3) / 4);
+            var compressedKB = approxBytes / 1024;
+            console.log("Comprimido KB:", compressedKB.toFixed(1));
+
+            setInfo(
+              "Tu foto se comprimió de " +
+                originalKB.toFixed(1) +
+                " KB a " +
+                compressedKB.toFixed(1) +
+                " KB para poder subirse 💙"
+            );
+
+            var ahora = new Date();
+
+            var data = {
+              imagen: base64,
+              nombre: nombre,
+              mensaje: mensaje,
+              fecha: ahora.toISOString(),
+            };
+
+            db.collection("fotosInvitados")
+              .add(data)
+              .then(function () {
+                alert("¡Gracias! Tu foto y mensaje se subieron ❤️");
+                archivoInput.value = "";
+                mensajeInput.value = "";
+                cargarGaleria();
+              })
+              .catch(function (error) {
+                console.error("Error al guardar en Firestore:", error);
+                setError(
+                  "Hubo un error al guardar la foto. Si estás en datos móviles, probá con WiFi o una foto más liviana."
+                );
+              });
+          };
+
+          img.onerror = function () {
+            setError("No se pudo leer la imagen. Probá con otra foto.");
+          };
+
+          img.src = e.target.result;
+        };
+
+        reader.onerror = function () {
+          setError("No se pudo leer el archivo seleccionado.");
+        };
+
+        reader.readAsDataURL(archivo);
+      } catch (error) {
+        console.error("Error en subirFoto:", error);
+        setError("Ocurrió un error inesperado al subir la foto.");
+      }
+    }
+
+    function abrirModal(data) {
+      var modal = document.getElementById("modal");
+      var img = document.getElementById("modal-img");
+      var nom = document.getElementById("modal-nombre");
+      var fec = document.getElementById("modal-fecha");
+      var msg = document.getElementById("modal-mensaje");
+
+      img.src = data.imagen;
+      nom.textContent = data.nombre || "Invitado";
+
+      var fechaTexto = "";
+      if (data.fecha) {
+        var fechaObj = new Date(data.fecha);
+        if (!isNaN(fechaObj.getTime())) {
+          fechaTexto = fechaObj.toLocaleDateString("es-AR", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          });
+        }
+      }
+      fec.textContent = fechaTexto ? "Subida el " + fechaTexto : "";
+      msg.textContent =
+        data.mensaje && data.mensaje.trim() !== ""
+          ? "“" + data.mensaje.trim() + "”"
+          : "Sin mensaje 💌";
+
+      modal.style.display = "flex";
+    }
+
+    function cerrarModal() {
+      var modal = document.getElementById("modal");
+      modal.style.display = "none";
+    }
+
+    function borrarFoto(id) {
+      if (!confirm("¿Seguro que querés eliminar esta foto?")) return;
+
+      db.collection("fotosInvitados")
+        .doc(id)
+        .delete()
+        .then(function () {
+          alert("Foto eliminada ✅");
+          cargarGaleria();
+        })
+        .catch(function (error) {
+          console.error("Error al borrar foto:", error);
+          setError("No se pudo borrar la foto.");
+        });
+    }
+
+    function crearCardFoto(data, id) {
+      var card = document.createElement("div");
+      card.className = "card";
+
+      var img = document.createElement("img");
+      img.src = data.imagen;
+
+      var info = document.createElement("div");
+      info.className = "card-info";
+
+      var nombreEl = document.createElement("div");
+      nombreEl.className = "card-nombre";
+      nombreEl.textContent = data.nombre || "Invitado";
+
+      var fechaEl = document.createElement("div");
+      fechaEl.className = "card-fecha";
+
+      var fechaTexto = "";
+      if (data.fecha) {
+        var fechaObj = new Date(data.fecha);
+        if (!isNaN(fechaObj.getTime())) {
+          fechaTexto = fechaObj.toLocaleDateString("es-AR", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          });
+        }
+      }
+      fechaEl.textContent = fechaTexto ? "Subida el " + fechaTexto : "";
+
+      var msgEl = document.createElement("div");
+      msgEl.className = "card-msg";
+      if (data.mensaje && data.mensaje.trim() !== "") {
+        msgEl.textContent = "“" + data.mensaje.trim() + "”";
+      }
+
+      info.appendChild(nombreEl);
+      info.appendChild(fechaEl);
+      if (msgEl.textContent) info.appendChild(msgEl);
+
+      if (isAdmin && id) {
+        var delBtn = document.createElement("button");
+        delBtn.className = "card-delete";
+        delBtn.textContent = "Eliminar";
+        delBtn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          borrarFoto(id);
+        });
+        info.appendChild(delBtn);
+      }
+
+      card.appendChild(img);
+      card.appendChild(info);
+
+      card.addEventListener("click", function () {
+        abrirModal(data);
+      });
+
+      return card;
+    }
+
+    function cargarGaleria() {
+      setError("");
+      var contenedor = document.getElementById("galeria");
+      contenedor.innerHTML = "";
+
+      db.collection("fotosInvitados")
+        .get()
+        .then(function (querySnapshot) {
+          querySnapshot.forEach(function (doc) {
+            var data = doc.data();
+            var card = crearCardFoto(data, doc.id);
+            contenedor.appendChild(card);
+          });
+        })
+        .catch(function (error) {
+          console.error("Error al cargar galería:", error);
+          setError("No se pudo cargar la galería. Probá recargar la página.");
+        });
+    }
+  </script>
 </body>
 </html>
