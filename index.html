@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galería 15 Valen</title>
+    <link href="https://fonts.googleapis.com/css2?family=Allura&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+
+    <style>
+   body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+    color: #003d80;
+
+    /* 🔵 Fondo con difuminado blanco */
+    background: 
+        linear-gradient(to bottom, rgba(255,255,255,0.2), rgba(255,255,255,1)),
+        url("fondo.jpg");
+
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* efecto más elegante */
+    }
+
+
+    h1 {
+    color: #000000;
+    font-family: "Great Vibes", cursive;
+    font-size: 80px;
+    font-weight: 300;
+    letter-spacing: 1px;
+   
+    }
+
+
+    h2 {
+        color: #003d80;
+        font-family: "Great Vibes", cursive;
+        font-size: 40px;
+        font-weight: 300;
+        letter-spacing: 1px;
+   
+    }
+
+    .uploadBox {
+        background: white;
+        padding: 20px;
+        border-radius: 16px;
+        margin: 20px auto;
+        width: 90%;
+        max-width: 520px;
+        box-shadow: 0px 8px 20px rgba(0,0,0,0.15);
+        border: 2px solid #80b3ff; /* borde azul suave */
+    }
+
+    .uploadBox h3 {
+        margin-top: 0;
+        color: #0059b3;
+        font-family: "Great Vibes", cursive;
+        font-size: 40px;
+        font-weight: 300;
+        letter-spacing: 1px;
+    }
+
+    .form-row {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 12px;
+        text-align: left;
+        color: #003d80;
+    }
+
+    label {
+        font-size: 14px;
+        color: #003d80;
+    }
+
+    input[type="text"],
+    input[type="file"],
+    textarea {
+        width: 100%;
+        padding: 8px 10px;
+        border-radius: 8px;
+        border: 1px solid #7da7ff;
+        font-size: 14px;
+        box-sizing: border-box;
+        background: #f5f9ff;
+        color: #003d80;
+    }
+
+    textarea {
+        resize: vertical;
+        min-height: 60px;
+        max-height: 120px;
+    }
+
+    #btnSubir {
+        background: #4d94ff;
+        color: white;
+        border: none;
+        padding: 10px 22px;
+        border-radius: 20px;
+        font-size: 14px;
+        cursor: pointer;
+        margin-top: 8px;
+        transition: 0.3s;
+    }
+
+    #btnSubir:hover {
+        background: #1a75ff;
+    }
+
+    .gallery {
+        margin-top: 20px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 14px;
+    }
+
+    .card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        display: flex;
+        flex-direction: column;
+        cursor: pointer;
+        border: 2px solid #b3ceff; /* borde azul suave */
+    }
+
+    .card img {
+        width: 100%;
+        height: 160px;
+        object-fit: cover;
+    }
+
+    .card-info {
+        padding: 8px 10px 10px;
+        font-size: 13px;
+        text-align: left;
+        color: #003d80;
+    }
+
+    .card-nombre {
+        font-weight: bold;
+        color: #0059b3;
+    }
+
+    .card-fecha {
+        font-size: 11px;
+        color: #3366cc;
+        margin-top: 2px;
+    }
+
+    .card-msg {
+        font-size: 12px;
+        margin-top: 6px;
+        color: #003d80;
+    }
+
+    /* Animación */
+    @keyframes fadein {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    /* ===== MODAL ===== */
+    .modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 51, 102, 0.7); /* azul oscuro translúcido */
+        justify-content: center;
+        align-items: center;
+        z-index: 999;
+        padding: 20px;
+    }
+
+    .modal-inner {
+        background: #ffffff;
+        border-radius: 16px;
+        max-width: 700px;
+        width: 100%;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        border: 3px solid #80b3ff;
+    }
+
+    #modal-close {
+        align-self: flex-end;
+        padding: 6px 12px;
+        font-size: 26px;
+        cursor: pointer;
+        color: #003d80;
+        font-weight: bold;
+    }
+
+    #modal-close:hover {
+        color: #000;
+    }
+
+    #modal-img {
+        width: 100%;
+        max-height: 60vh;
+        object-fit: contain;
+        background: #e6f0ff;
+    }
+
+    .modal-text {
+        padding: 10px 16px 16px;
+        text-align: left;
+        font-size: 14px;
+        color: #003d80;
+    }
+
+    #modal-nombre {
+        font-weight: bold;
+        color: #0059b3;
+        margin-bottom: 4px;
+        font-size: 16px;
+    }
+
+    #modal-fecha {
+        font-size: 12px;
+        color: #3366cc;
+        margin-bottom: 6px;
+    }
+
+    #modal-mensaje {
+        font-size: 14px;
+        color: #003d80;
+    }
+
+    @media (max-width: 480px) {
+        .modal-inner {
+            border-radius: 10px;
+        }
+    }
+</style>
+
+</head>
+<body>
+
+    <h1> Subí tus fotos del cumpleaños 💙</h1>
+
+    <div class="uploadBox">
+        <h3>Agregar foto al recuerdo</h3>
+
+        <div class="form-row">
+            <label for="nombre">Nombre y apellido</label>
+            <input type="text" id="nombre" placeholder="Ej: Daniel Farfan">
+        </div>
+
+        <div class="form-row">
+            <label for="mensaje">Mensaje para Valen (opcional)</label>
+            <textarea id="mensaje" placeholder="Ej: ¡Feliz 15 Valen, te queremos mucho!"></textarea>
+        </div>
+
+        <div class="form-row">
+            <label for="foto">Elegí una foto</label>
+            <input type="file" id="foto" accept="image/*">
+        </div>
+
+        <button id="btnSubir">Subir Foto</button>
+    </div>
+
+    <h2>Galería del Evento 📸</h2>
+
+    <div id="galeria" class="gallery"></div>
+
+    <!-- MODAL PARA VER FOTO EN GRANDE -->
+    <div id="modal" class="modal">
+        <div class="modal-inner">
+            <span id="modal-close">&times;</span>
+            <img id="modal-img" src="" alt="Foto del evento">
+            <div class="modal-text">
+                <div id="modal-nombre"></div>
+                <div id="modal-fecha"></div>
+                <div id="modal-mensaje"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>
